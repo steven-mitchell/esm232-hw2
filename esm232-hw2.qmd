@@ -25,6 +25,6 @@ library(janitor)
 ```
 
 ```{r data}
-clim-data <- read_csv("clim.txt", delim = " ")
+clim_data <- read_delim(file = "clim.txt", delim = " ")
 ```
 
