@@ -20,7 +20,7 @@ editor: visual
 # The Almond Yield Equation from Lobell et al. 2006
 
 $$
-Y = -0.0157T_{n,2} - 0.0046T^{2}_{n,2} - 0.07P^{2}_{1} + 0.0043P^{2}_{1} + 0.28
+Y = -0.0157T_{n,2} - 0.0046T^{2}_{n,2} - 0.07P_{1} + 0.0043P^{2}_{1} + 0.28
 $$
 
 ```{r libraries}
