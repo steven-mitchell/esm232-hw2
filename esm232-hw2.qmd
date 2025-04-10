@@ -31,4 +31,3 @@ library(here)
 ```{r data}
 clim_data <- read_delim(file = "clim.txt", delim = " ")
 ```
-
