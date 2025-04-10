@@ -29,5 +29,21 @@ library(here)
 ```
 
 ```{r data}
-clim_data <- read_delim(file = "clim.txt", delim = " ")
+clim_data <- read_delim(file = "clim.txt", delim = " ") %>% 
+  group_by(year, month) %>%
+  summarise(T = min(tmin_c),
+            P = sum(precip))
+
+T <- clim_data %>% 
+  filter(month == 2) %>% 
+  select(year, T)
+
+P <- clim_data %>%
+  filter(month == 1) %>% 
+  select(year, P)
+```
+
+```{r source function}
+source(here("R", "almond-yield.R"))
+
 ```
