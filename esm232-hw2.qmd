@@ -1,0 +1,30 @@
+---
+title: "Assignment 2"
+subtitle: "Almond Yield"
+date: last-modified
+author: "Kyle Alves & Steven Mitchell"
+format: 
+  html:
+    code-fold: true
+    code-tools: true
+    toc: true
+    toc-location: left
+    theme: sandstone
+    background-color: "#f8f9fa"
+execute:
+  echo: true
+  warning: false
+  message: false
+editor: visual
+---
+
+```{r libraries}
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+```{r data}
+clim-data <- read_csv("clim.txt", delim = " ")
+```
+
