@@ -26,10 +26,13 @@ $$
 ```{r libraries}
 library(tidyverse)
 library(here)
+library(janitor)
 ```
 
+### Data wrangling
+
 ```{r data}
-clim_data <- read_delim(file = "clim.txt", delim = " ") %>% 
+clim_data <- read_delim(file = "clim.txt", delim = " ") |>
   group_by(year, month) %>%
   summarise(T = min(tmin_c),
             P = sum(precip))
@@ -43,7 +46,48 @@ P <- clim_data %>%
   select(year, P)
 ```
 
-```{r source function}
-source(here("R", "almond-yield.R"))
+```{r}
+clim_clean = data.frame(temp=T, precip=P) |>
+  clean_names() |>
+  select(-precip_year) |>
+  rename(year = temp_year) |>
+  rename(temp = temp_t) |>
+  rename(precip = precip_p)
+```
 
+```{r}
+source(here("R", "almond-yield.R"))
+```
+
+### Exploratory Data Analysis
+
+```{r}
+dailyprecip <- ggplot(data = clim_clean) +
+  geom_col(aes(x = year, y = precip), color = "blue") +
+  labs(title = "Daily Precipitation in January", x = "Date", y = "Precipitation (mm)") +
+  theme_minimal()
+
+dailyprecip
+```
+
+```{r}
+dailytemp <- ggplot(data = clim_clean) +
+  geom_col(aes(x = year, y = temp), color = "blue") +
+  labs(title = "Daily Temperature in January", x = "Date", y = "Temperature (C)") +
+  theme_minimal()
+
+dailytemp
+```
+
+### Apply Model on Data
+
+```{r}
+clim_clean$ayield = almondyield(clim_clean$temp, clim_clean$precip)
+
+#find the maximum, minimum and mean yield anomoly
+max_yield = max(clim_clean$ayield)
+min_yield = min(clim_clean$ayield)
+mean_yield = mean(clim_clean$ayield)
+
+tibble(max_yield, min_yield, mean_yield)
 ```
