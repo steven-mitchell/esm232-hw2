@@ -17,11 +17,17 @@ execute:
 editor: visual
 ---
 
+# Our Conceptual Model Diagram
+
+![](diagram.png)
+
 # The Almond Yield Equation from Lobell et al. 2006
 
 $$
 Y = -0.015T_{n,2} - 0.0046T^{2}_{n,2} - 0.07P_{1} + 0.0043P^{2}_{1} + 0.28
 $$
+
+# Coding the Model
 
 ```{r libraries}
 library(tidyverse)
@@ -29,24 +35,28 @@ library(here)
 library(janitor)
 ```
 
-### Data wrangling
+## Data wrangling
 
 ```{r data}
+# Load data, summarize monthly min temp and precip totals
 clim_data <- read_delim(file = "clim.txt", delim = " ") |>
   group_by(year, month) %>%
   summarise(T = min(tmin_c),
             P = sum(precip))
 
+# Make a data frame of minimum February temps
 T <- clim_data %>% 
   filter(month == 2) %>% 
   select(year, T)
 
+# Make a data frame of total January precip
 P <- clim_data %>%
   filter(month == 1) %>% 
   select(year, P)
 ```
 
 ```{r}
+# Make a clean data frame for exploratory visualizations
 clim_clean = data.frame(temp=T, precip=P) |>
   clean_names() |>
   select(-precip_year) |>
@@ -55,13 +65,17 @@ clim_clean = data.frame(temp=T, precip=P) |>
   rename(precip = precip_p)
 ```
 
+## Bring in the Model from a separate R script
+
 ```{r}
+# Bring in the model from a separate R script
 source(here("R", "almond-yield.R"))
 ```
 
-### Exploratory Data Analysis
+## Exploratory Data Visualizations
 
 ```{r}
+# Plot the precip data
 dailyprecip <- ggplot(data = clim_clean) +
   geom_col(aes(x = year, y = precip), color = "blue") +
   labs(title = "Daily Precipitation in January", x = "Date", y = "Precipitation (mm)") +
@@ -71,6 +85,7 @@ dailyprecip
 ```
 
 ```{r}
+# Plot the temperature data
 dailytemp <- ggplot(data = clim_clean) +
   geom_col(aes(x = year, y = temp), color = "blue") +
   labs(title = "Daily Temperature in January", x = "Date", y = "Temperature (C)") +
@@ -79,15 +94,19 @@ dailytemp <- ggplot(data = clim_clean) +
 dailytemp
 ```
 
-### Apply Model on Data
+## Apply Model on Data
 
 ```{r}
 clim_clean$ayield = almondyield(clim_clean$temp, clim_clean$precip)
 
-#find the maximum, minimum and mean yield anomoly
+#find the maximum, minimum and mean yield anomaly
 max_yield = max(clim_clean$ayield)
 min_yield = min(clim_clean$ayield)
 mean_yield = mean(clim_clean$ayield)
 
 tibble(max_yield, min_yield, mean_yield)
 ```
+
+|Max Yield|Min Yield|Mean Yield|
+|--|--|--|
+|1920.308|-0.02682371|181.759|
