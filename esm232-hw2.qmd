@@ -63,6 +63,8 @@ clim_clean = data.frame(temp=T, precip=P) |>
   rename(year = temp_year) |>
   rename(temp = temp_t) |>
   rename(precip = precip_p)
+
+write.csv(clim_clean, "climate_data.csv")
 ```
 
 ## Bring in the Model from a separate R script

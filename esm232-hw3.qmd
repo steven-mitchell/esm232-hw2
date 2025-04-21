@@ -32,11 +32,13 @@ library(tidyverse)
 library(ggplot2)
 library(here)
 library(janitor)
+library(purrr)
+library(ggpubr)
 ```
 
 ```{r}
 #load data
-
+climate_data <- read_delim(file = "climate_data.df", delim = " ")
 ```
 
 ```{r}
@@ -49,6 +51,15 @@ source(here("R", "almond-profit.R"))
 ## Apply the profit model to your almond yield model
 
 -   There are many ways to combine the almond yield and profit functions; you can have the profit function "call"/use the almond yield function; or create a wrapper function that calls them in sequence (first the almond yield and then the profit function)
+
+```{r}
+almond_profit
+
+profit1 <- almond_profit(T = climate_data$temp, P = climate_data$precip)
+
+profit1
+
+```
 
 ## Perform a simple informal sensitivity analysis of almond yield profit using at least 2 parameters
 
