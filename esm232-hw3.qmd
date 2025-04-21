@@ -1,0 +1,42 @@
+---
+title: "Assignment 3"
+subtitle: "Almond Yield Profit Model"
+date: last-modified
+author: "Kyle Alves & Steven Mitchell"
+format: 
+  html:
+    code-fold: true
+    toc: true
+    toc-location: left
+    theme: sandstone
+    background-color: "#f8f9fa"
+execute:
+  echo: true
+  warning: false
+  message: false
+editor: visual
+---
+
+## Develop a profit model for your almond yield
+
+-   Use your imagination to think about what would make sense
+
+-   Make sure you include parameters
+
+-   You could assume a baseline profit and then adjust according to the anomaly
+
+## Apply the profit model to your almond yield model
+
+-   There are many ways to combine the almond yield and profit functions; you can have the profit function "call"/use the almond yield function; or create a wrapper function that calls them in sequence (first the almond yield and then the profit function)
+
+## Perform a simple informal sensitivity analysis of almond yield profit using at least 2 parameters
+
+## Create 2 graphs
+
+\- one that shows yield anomaly for each year, accounting for uncertainty in the parameters
+
+\- one that show how yield anomaly in general varies with your parameters
+
+## Write a short paragraph 
+
+summarize your interpretation of your model results (e.g what do 'take away' from your model and sensitivity analysis)

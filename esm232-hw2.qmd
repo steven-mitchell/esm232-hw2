@@ -107,6 +107,6 @@ mean_yield = mean(clim_clean$ayield)
 tibble(max_yield, min_yield, mean_yield)
 ```
 
-|Max Yield|Min Yield|Mean Yield|
-|--|--|--|
-|1920.308|-0.02682371|181.759|
+| Max Yield | Min Yield   | Mean Yield |
+|-----------|-------------|------------|
+| 1920.308  | -0.02682371 | 181.759    |
