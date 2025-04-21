@@ -25,6 +25,27 @@ editor: visual
 
 -   You could assume a baseline profit and then adjust according to the anomaly
 
+```{r}
+#load libraries
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(here)
+library(janitor)
+```
+
+```{r}
+#load data
+
+```
+
+```{r}
+#Bring in both models for profit yield and almond yield
+source(here("R", "almond-yield.R"))
+
+source(here("R", "almond-profit.R"))
+```
+
 ## Apply the profit model to your almond yield model
 
 -   There are many ways to combine the almond yield and profit functions; you can have the profit function "call"/use the almond yield function; or create a wrapper function that calls them in sequence (first the almond yield and then the profit function)
