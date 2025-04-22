@@ -10,6 +10,8 @@ format:
     toc-location: left
     theme: sandstone
     background-color: "#f8f9fa"
+    embed-resources: true
+    self-contained-math: true
 execute:
   echo: true
   warning: false
@@ -17,15 +19,9 @@ execute:
 editor: visual
 ---
 
-## Develop a profit model for your almond yield
+# Develop a profit model for your almond yield
 
--   Use your imagination to think about what would make sense
-
--   Make sure you include parameters
-
--   You could assume a baseline profit and then adjust according to the anomaly
-
-```{r}
+```{r setup}
 #load libraries
 library(dplyr)
 library(tidyverse)
@@ -34,41 +30,124 @@ library(here)
 library(janitor)
 library(purrr)
 library(ggpubr)
-```
 
-```{r}
-#load data
-climate_data <- read_delim(file = "climate_data.df", delim = " ")
-```
-
-```{r}
 #Bring in both models for profit yield and almond yield
 source(here("R", "almond-yield.R"))
-
 source(here("R", "almond-profit.R"))
 ```
 
-## Apply the profit model to your almond yield model
+```{r data}
+# Load data, summarize monthly min temp and precip totals
+clim_data <- read_delim(file = "clim.txt", delim = " ") |>
+  group_by(year, month) %>%
+  summarise(T = min(tmin_c),
+            P = sum(precip))
 
--   There are many ways to combine the almond yield and profit functions; you can have the profit function "call"/use the almond yield function; or create a wrapper function that calls them in sequence (first the almond yield and then the profit function)
+# Make a data frame of minimum February temps
+T <- clim_data %>% 
+  filter(month == 2) %>% 
+  select(year, T)
+
+# Make a data frame of total January precip
+P <- clim_data %>%
+  filter(month == 1) %>% 
+  select(year, P)
+
+# Make a clean data frame 
+clim_clean = data.frame(temp = T, precip = P) %>% 
+  clean_names() %>% 
+  select(-precip_year) %>% 
+  rename(year = temp_year) %>% 
+  rename(temp = temp_t) %>% 
+  rename(precip = precip_p)
+
+# Run the almond yield model 
+clim_clean$ayield = almondyield(clim_clean$temp, clim_clean$precip)
+```
+
+
+
+# Apply the profit model to your almond yield model
 
 ```{r}
 almond_profit
 
-profit1 <- almond_profit(T = climate_data$temp, P = climate_data$precip)
-
-profit1
-
+clim_clean$profit1 <- almond_profit(T = clim_clean$temp, P = clim_clean$precip)
 ```
 
-## Perform a simple informal sensitivity analysis of almond yield profit using at least 2 parameters
+# Perform a simple informal sensitivity analysis of almond yield profit using at least 2 parameters
 
-## Create 2 graphs
+## Visualize Inputs
 
-\- one that shows yield anomaly for each year, accounting for uncertainty in the parameters
+```{r}
+# Make some random distributions for precip and temp
+clim_clean$temp_norm <- rnorm(mean = mean(clim_clean$temp), sd = 5, n = length(clim_clean$temp))
+clim_clean$precip_norm <- rnorm(mean = mean(clim_clean$precip), sd = 5, n = length(clim_clean$precip))
 
-\- one that show how yield anomaly in general varies with your parameters
+ggplot(clim_clean, aes(x = year, y = temp_norm)) +
+  geom_point(col = "blue") +
+  labs(title = "True Temp (Blue) vs Randomly Generated Temp (Red)",
+       x = "Year",
+       y = "Temperature (C)") +
+  geom_point(aes(y = temp),
+                 col = "red") +
+            theme_bw()
 
-## Write a short paragraph 
+ggplot(clim_clean, aes(x = year, y = precip_norm)) +
+  geom_point(col = "blue") +
+  labs(title = "True Precip (Blue) vs Randomly Generated Precip (Red)",
+       x = "Year",
+       y = "Precipitation (mm)") +
+  geom_point(aes(y = precip),
+                 col = "red") +
+            theme_bw()
+```
 
-summarize your interpretation of your model results (e.g what do 'take away' from your model and sensitivity analysis)
+## Sensitivty Analysis
+
+```{r}
+parms <- cbind.data.frame(T = clim_clean$temp_norm, 
+                          P = clim_clean$precip_norm)
+
+
+
+
+# now run our model for the parameters
+results <- parms %>% 
+  pmap(~ almond_profit(
+    T = parms$T,
+    P = parms$P,
+  baseline_yield = 1.125, 
+  ppt = 3000, 
+  area = 100, 
+  cost = 4000
+  ))
+
+results[[1]]
+length(results)
+
+# extract the mean yield for each year
+mean_profit <- map_df(results, `[`, c("mean"))
+mean_profit <- cbind.data.frame(mean_profit, parms)
+
+ggplot(mean_profit, aes(x = T, y = mean,
+                       col = P)) +
+  geom_point() +
+  labs(title = "Mean Profit vs Temperature",
+       x = "Temperature (C)",
+       y = "Mean Profit") +
+  theme_bw()
+
+ggplot(mean_profit, aes(x = P, y = mean,
+                       col = T)) +
+  geom_point() +
+  labs(title = "Mean Profit vs Precipitation",
+       x = "Precipitation (mm)",
+       y = "Mean Profit") +
+  theme_bw()
+```
+
+
+# Write a short paragraph 
+
+Based on our models for almond yield and the profit model that the yields feed into, it appears that precipitation may play a larger role in profits than temperature. This is based on what appears to be a direct linear relationship between precipitation and profit, while temperature appears not to have a clear correlation.

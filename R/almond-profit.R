@@ -14,11 +14,13 @@ almond_profit = function(T, P, baseline_yield = 1.125, ppt = 3000, area = 100, c
   
   #compute the profit
   revenue = yield * ppt * area
-  cost = cost * area
+  expense = cost * area
   
   #compute profit
-  profit = revenue - cost
-  return(profit)
+  profit = revenue - expense
+ 
+  # return as a named list
+  return(list(mean = profit))
   
 } 
 
